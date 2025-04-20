@@ -221,15 +221,6 @@ def Q5(dataframe):
         else:
             unbalanced += 1
 
-    # Count total triplets (open + closed)
-    def count_triplets(adj):
-        count = 0
-        for node in adj:
-            deg = len(adj[node])
-            if deg >= 2:
-                count += deg * (deg - 1) // 2
-        return count
-
     num_closed_triplets = 3 * len(triangles)
     total_triplets = count_triplets(adj)
     num_open_triplets = total_triplets - num_closed_triplets
@@ -242,9 +233,9 @@ def Q5(dataframe):
 print("Reading epinion.txt ...")
 df = pd.read_csv('epinion.txt', header=None,sep="    ", engine="python")
 print("Reading done.")
-#print("Q1", Q1(df))
-print("Q2", Q2(df))
-print("Q3", Q3(df))
-print("Q4", Q4(df))
+# print("Q1", Q1(df))
+# print("Q2", Q2(df))
+# print("Q3", Q3(df))
+# print("Q4", Q4(df))
 print("Q5", Q5(df))
 
