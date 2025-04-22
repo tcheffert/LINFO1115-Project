@@ -1,42 +1,43 @@
 import numpy as np
 import pandas as pd
-import sys 
+import sys
 from template_utils import *
 from scipy.stats import t
-p_value=t.sf
-#import networkx as nx
+p_value = t.sf
+# import networkx as nx
 
 sys.setrecursionlimit(6000)
-#A line of the dataset (u, v, w) means that node u has opinion w on node v.
+# A line of the dataset (u, v, w) means that node u has opinion w on node v.
 # Undirected graph
 # Task 1: Basic graph properties
+
+
 def Q1(dataframe):
-    u_df=undirect(dataframe).copy()
-    
-    #Q1.1
-    unique_values=sorted(u_df[0].unique())
+    u_df = undirect(dataframe).copy()
+
+    # Q1.1
+    unique_values = sorted(u_df[0].unique())
     full_range = list(range(min(unique_values), max(unique_values) + 1))
     missing_values = list(set(full_range) - set(unique_values))
 
-    
-    current=u_df[0][0]
-    occ=0
-    degree_list=[]
+    current = u_df[0][0]
+    occ = 0
+    degree_list = []
     for i in u_df[0]:
-        if i==current:
-            occ+=1
+        if i == current:
+            occ += 1
         else:
-            degree_list+=[occ]
-            current=i
-            occ=1
-    degree_list+=[0]*len(missing_values)
-    degree_mean=np.mean(degree_list)
-    #Q1.2    
+            degree_list += [occ]
+            current = i
+            occ = 1
+    degree_list += [0]*len(missing_values)
+    degree_mean = np.mean(degree_list)
+    # Q1.2
     hist = [0] * 21
     for i in degree_list:
-        if i<21:
-            hist[i]+=1
-    hist[0]+=len(missing_values)
+        if i < 21:
+            hist[i] += 1
+    hist[0] += len(missing_values)
     # Q1.3
     adj = {}
     for row in u_df.values:
@@ -47,7 +48,7 @@ def Q1(dataframe):
             adj[v] = set()
         adj[u].add(v)
         adj[v].add(u)
-        
+
     bridges = find_bridges(adj)
 
     # Q1.4
@@ -69,9 +70,11 @@ def Q1(dataframe):
 
     if degrees:
         mean_lb = sum(degrees) / len(degrees)
-        std_lb = (sum((x - mean_lb) ** 2 for x in degrees) / len(degrees)) ** 0.5
+        std_lb = (sum((x - mean_lb) ** 2 for x in degrees) /
+                  len(degrees)) ** 0.5
         n = len(degrees)
-        t_stat = (mean_lb - degree_mean) / (std_lb / n**0.5) if std_lb != 0 else 0
+        t_stat = (mean_lb - degree_mean) / \
+            (std_lb / n**0.5) if std_lb != 0 else 0
         p_v = 2 * t.sf(abs(t_stat), n-1)
 
     else:
@@ -80,19 +83,35 @@ def Q1(dataframe):
     return [degree_mean, hist, len(bridges), local_bridges, p_v]
 # Directed graph
 # Task 2: Best score node
+
+
 def Q2(dataframe):
-     # the id of the node with the highest score and its score
-    df=dataframe.copy()
-    p=[0]*(df[1].max()+1)
-    for i in df[1]:
-        p[i]+=1
-    index=0
-    max=0
-    for i in range(len(p)):
-        if p[i]>max:
-            max=p[i]
-            index=i
-    return [index, max] # the id of the node with the highest score and its score
+    df = dataframe.copy()
+    scores = {}  # Dico pour stocker les scores des nodes: {node_i:score_i}
+
+    # Parcours de chaque ligne de la df
+    for _, row in df.iterrows():
+        node_v = row[1]   #Colonne 1
+        weight_w = row[2] #Colonne 2
+
+        # Si node_v pas dans le dico => init score à 0
+        if node_v not in scores:
+            scores[node_v] = 0
+
+        #Add poids w au score du node v
+        scores[node_v] += weight_w
+
+    # Parcours les scores pour trouver le noeud avec le plus grd score
+    best_node = None
+    max_score = float('-inf') 
+    for node, score in scores.items():
+        if score > max_score:
+            max_score = score
+            best_node = node
+
+    # Return l'id du node avec le plus grd score et celui-ci
+    return [int(best_node), int(max_score)]
+
 # Undirected graph
 # Task 3: Paths lengths analysis
 def Q3(dataframe):
@@ -121,15 +140,16 @@ def Q3(dataframe):
     for dist in result:
         path_counts[dist - 1] += 1
 
-    return [max_len] + path_counts # at index 0, the diameter of the largest connected component, at index 1 the total number of shortest paths of length 1 accross all components,
+    # at index 0, the diameter of the largest connected component, at index 1 the total number of shortest paths of length 1 accross all components,
+    return [max_len] + path_counts
     # at index the 2 the number of shortest paths of length 2...
-    
+
 
 # Directed graph
 # Task 4: PageRank
 def Q4(dataframe):
     # Build adjacency lists from the dataframe
-    df=dataframe.copy()
+    df = dataframe.copy()
     edges = df[[0, 1]].values
     outgoing = {}
     incoming = {}
@@ -139,7 +159,7 @@ def Q4(dataframe):
         nodes.update([src, dst])
         outgoing.setdefault(src, set()).add(dst)
         incoming.setdefault(dst, set()).add(src)
-        outgoing.setdefault(dst, set())  
+        outgoing.setdefault(dst, set())
         incoming.setdefault(src, set())
 
     nodes = list(nodes)
@@ -173,18 +193,21 @@ def Q4(dataframe):
     max_node = max(pr, key=pr.get)
     max_score = pr[max_node]
 
-    return [max_node, max_score] # the id of the node with the highest pagerank score, the associated pagerank value.
+    # the id of the node with the highest pagerank score, the associated pagerank value.
+    return [max_node, max_score]
     # Note that we consider that we reached convergence when the sum of the updates on all nodes after one iteration of PageRank is smaller than 10^(-6)
 
 # Undirected graph
-# Task 5: Relationship analysis 
+# Task 5: Relationship analysis
+
+
 def Q5(dataframe):
     # Convert to undirected graph (with signed edges)
     u_df = undirect(dataframe).copy()
 
     # Build adjacency list and edge sign dictionary
-    adj = {}          
-    edge_sign = {}   
+    adj = {}
+    edge_sign = {}
 
     for row in u_df.values:
         u, v, w = row
@@ -226,16 +249,17 @@ def Q5(dataframe):
     num_open_triplets = total_triplets - num_closed_triplets
     gcc = num_closed_triplets / num_open_triplets if num_open_triplets > 0 else 0
 
-    return [len(triangles), balanced, unbalanced, gcc] # number of triangles, number of balanced triangles, number of unbalanced triangles and the GCC.
+    # number of triangles, number of balanced triangles, number of unbalanced triangles and the GCC.
+    return [len(triangles), balanced, unbalanced, gcc]
 
 # you can write additionnal functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
 
+
 print("Reading epinion.txt ...")
-df = pd.read_csv('epinion.txt', header=None,sep="    ", engine="python")
+df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 print("Reading done.")
 # print("Q1", Q1(df))
-# print("Q2", Q2(df))
+print("Q2", Q2(df))
 # print("Q3", Q3(df))
 # print("Q4", Q4(df))
-print("Q5", Q5(df))
-
+# print("Q5", Q5(df))
