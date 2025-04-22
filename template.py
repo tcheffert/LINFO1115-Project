@@ -14,14 +14,12 @@ sys.setrecursionlimit(6000)
 
 def Q1(dataframe):
     u_df = undirect(dataframe).copy()
-    print(f"Nombre d'arêtes : {len(u_df)}")
-    print(f"Nombre de noeuds : {len(set(u_df[0]).union(set(u_df[1])))}")
 
     # Q1.1
     # Calcul des degrés
     degree_count = u_df[0].value_counts()
     degree_mean = degree_count.mean()
-    print(degree_mean)
+
     
     # unique_values = sorted(u_df[0].unique())
     # full_range = list(range(min(unique_values), max(unique_values) + 1))
@@ -62,9 +60,11 @@ def Q1(dataframe):
     local_bridges = 0
     for u in adj:
         for v in adj[u]:
-            if u < v and (u, v) not in bridges and (v, u) not in bridges:
+            if u < v:
                 if is_local_bridge(adj, u, v):
                     local_bridges += 1
+
+    #print(local_bridges)
 
     # Q1.5
     degrees = []
