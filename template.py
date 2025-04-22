@@ -15,34 +15,16 @@ sys.setrecursionlimit(6000)
 def Q1(dataframe):
     u_df = undirect(dataframe).copy()
 
-    # Q1.1
-    # Calcul des degrés
+    # Q1.1: Calcul des degrés
     degree_count = u_df[0].value_counts()
     degree_mean = degree_count.mean()
 
-    
-    # unique_values = sorted(u_df[0].unique())
-    # full_range = list(range(min(unique_values), max(unique_values) + 1))
-    # missing_values = list(set(full_range) - set(unique_values))
+    # Q1.2: Histogramme des degrés (jusqu'à 20)
+    hist = [0] * 21
+    for deg in degree_count.values:
+        if deg < 21:
+            hist[deg] += 1
 
-    # current = u_df[0][0]
-    # occ = 0
-    # degree_list = []
-    # for i in u_df[0]:
-    #     if i == current:
-    #         occ += 1
-    #     else:
-    #         degree_list += [occ]
-    #         current = i
-    #         occ = 1
-    # degree_list += [0]*len(missing_values)
-    # degree_mean = np.mean(degree_list)
-    # Q1.2
-    # hist = [0] * 21
-    # for i in degree_list:
-    #     if i < 21:
-    #         hist[i] += 1
-    # hist[0] += len(missing_values)
     # Q1.3
     adj = {}
     for row in u_df.values:
@@ -87,7 +69,7 @@ def Q1(dataframe):
     else:
         p_v = 1.0
 
-    return [float(degree_mean), "hist", len(bridges), local_bridges, p_v]
+    return [float(degree_mean), hist, len(bridges), local_bridges, p_v]
 # Directed graph
 # Task 2: Best score node
 
