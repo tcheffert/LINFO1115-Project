@@ -14,30 +14,37 @@ sys.setrecursionlimit(6000)
 
 def Q1(dataframe):
     u_df = undirect(dataframe).copy()
+    print(f"Nombre d'arêtes : {len(u_df)}")
+    print(f"Nombre de noeuds : {len(set(u_df[0]).union(set(u_df[1])))}")
 
     # Q1.1
-    unique_values = sorted(u_df[0].unique())
-    full_range = list(range(min(unique_values), max(unique_values) + 1))
-    missing_values = list(set(full_range) - set(unique_values))
+    # Calcul des degrés
+    degree_count = u_df[0].value_counts()
+    degree_mean = degree_count.mean()
+    print(degree_mean)
+    
+    # unique_values = sorted(u_df[0].unique())
+    # full_range = list(range(min(unique_values), max(unique_values) + 1))
+    # missing_values = list(set(full_range) - set(unique_values))
 
-    current = u_df[0][0]
-    occ = 0
-    degree_list = []
-    for i in u_df[0]:
-        if i == current:
-            occ += 1
-        else:
-            degree_list += [occ]
-            current = i
-            occ = 1
-    degree_list += [0]*len(missing_values)
-    degree_mean = np.mean(degree_list)
+    # current = u_df[0][0]
+    # occ = 0
+    # degree_list = []
+    # for i in u_df[0]:
+    #     if i == current:
+    #         occ += 1
+    #     else:
+    #         degree_list += [occ]
+    #         current = i
+    #         occ = 1
+    # degree_list += [0]*len(missing_values)
+    # degree_mean = np.mean(degree_list)
     # Q1.2
-    hist = [0] * 21
-    for i in degree_list:
-        if i < 21:
-            hist[i] += 1
-    hist[0] += len(missing_values)
+    # hist = [0] * 21
+    # for i in degree_list:
+    #     if i < 21:
+    #         hist[i] += 1
+    # hist[0] += len(missing_values)
     # Q1.3
     adj = {}
     for row in u_df.values:
@@ -80,7 +87,7 @@ def Q1(dataframe):
     else:
         p_v = 1.0
 
-    return [degree_mean, hist, len(bridges), local_bridges, p_v]
+    return [float(degree_mean), "hist", len(bridges), local_bridges, p_v]
 # Directed graph
 # Task 2: Best score node
 
@@ -194,7 +201,7 @@ def Q4(dataframe):
     max_score = pr[max_node]
 
     # the id of the node with the highest pagerank score, the associated pagerank value.
-    return [max_node, max_score]
+    return [int(max_node), int(max_score)]
     # Note that we consider that we reached convergence when the sum of the updates on all nodes after one iteration of PageRank is smaller than 10^(-6)
 
 # Undirected graph
@@ -258,8 +265,8 @@ def Q5(dataframe):
 print("Reading epinion.txt ...")
 df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 print("Reading done.")
-# print("Q1", Q1(df))
-print("Q2", Q2(df))
+print("Q1", Q1(df))
+#print("Q2", Q2(df))  #OK
 # print("Q3", Q3(df))
-# print("Q4", Q4(df))
+# print("Q4", Q4(df))  #OK
 # print("Q5", Q5(df))
