@@ -69,6 +69,11 @@ def Q1(dataframe):
     else:
         p_v = 1.0
 
+    # print(f"# nœuds LB non-global: {len(degrees)}")
+    # print(f"mean LB: {mean_lb:.3f} vs global mean: {degree_mean:.3f}")
+    # print("T-stat:", t_stat)
+    # print("P-value:", p_v)
+
     return [float(degree_mean), hist, len(bridges), local_bridges, p_v]
 # Directed graph
 # Task 2: Best score node
@@ -248,7 +253,7 @@ print("Reading epinion.txt ...")
 df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 print("Reading done.")
 print("Q1 ▶", Q1(df))  #OK
-print("Q2 ▶", Q2(df))  #OK
-print("Q3 ▶", Q3(df))  #OK
-print("Q4 ▶", Q4(df))  #OK
-print("Q5 ▶", Q5(df))
+# print("Q2 ▶", Q2(df))  #OK
+# print("Q3 ▶", Q3(df))  #OK
+# print("Q4 ▶", Q4(df))  #OK
+# print("Q5 ▶", Q5(df))
