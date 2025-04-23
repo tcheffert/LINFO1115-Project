@@ -183,7 +183,7 @@ def Q4(dataframe):
     max_score = pr[max_node]
 
     # the id of the node with the highest pagerank score, the associated pagerank value.
-    return [int(max_node), int(max_score)]
+    return [int(max_node), float(max_score)]
     # Note that we consider that we reached convergence when the sum of the updates on all nodes after one iteration of PageRank is smaller than 10^(-6)
 
 # Undirected graph
@@ -247,8 +247,8 @@ def Q5(dataframe):
 print("Reading epinion.txt ...")
 df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 print("Reading done.")
-#print("1️⃣ ​Q1 ▶️ ​", Q1(df))
-#print("2️⃣​ ​Q2 ▶️ ​", Q2(df))  #OK
-print("​3️⃣​ ​Q3 ▶️ ​", Q3(df))
-# print("4️⃣​ ​Q4 ▶️ ​", Q4(df))  #OK
-# print("5️⃣ ​Q5 ▶️ ", Q5(df))
+print("Q1 ▶", Q1(df))  #OK
+print("Q2 ▶", Q2(df))  #OK
+print("Q3 ▶", Q3(df))  #OK
+print("Q4 ▶", Q4(df))  #OK
+# print("5️⃣ ​Q5 ▶", Q5(df))
