@@ -73,6 +73,48 @@ def is_local_bridge(graph, u, v):
 
     return not found or dist > 2
 
+def bfs(start, adj, visited: set):
+        queue = [start]
+        component = set()
+        while queue:
+            node = queue.pop(0)
+            if node not in visited:
+                visited.add(node)
+                component.add(node)
+                for neighbor in adj[node]:
+                    if neighbor not in visited:
+                        queue.append(neighbor)
+        return component
+
+def largest_connected_component(adj):
+    visited = set()
+    largest_component = set()
+
+    for node in adj:
+        if node not in visited:
+            component = bfs(node, adj, visited)
+            if len(component) > len(largest_component):
+                largest_component = component
+
+    return largest_component
+
+def diameter(adj, component):
+    max_distance = 0
+
+    for start in component:
+        distances = {start: 0}
+        queue = [start]
+        while queue:
+            current = queue.pop(0)
+            for neighbor in adj[current]:
+                if neighbor in component and neighbor not in distances:
+                    distances[neighbor] = distances[current] + 1
+                    queue.append(neighbor)
+        max_distance = max(max_distance, max(distances.values()))
+
+    return max_distance
+
+
 def shortest_paths(adj):
     """
     Compute shortest path lengths between all node pairs across all connected components.
@@ -94,6 +136,7 @@ def shortest_paths(adj):
                     queue.append(neighbor)
 
         for target, dist in visited.items():
+            # Eviter de compter 2 fois les paires (u, v) et (v, u)
             if start < target:  
                 path_lengths.append(dist)
 

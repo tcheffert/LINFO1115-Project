@@ -247,8 +247,8 @@ def Q5(dataframe):
 print("Reading epinion.txt ...")
 df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 print("Reading done.")
-print("Q1", Q1(df))
-#print("Q2", Q2(df))  #OK
-# print("Q3", Q3(df))
-# print("Q4", Q4(df))  #OK
-# print("Q5", Q5(df))
+#print("1️⃣ ​Q1 ▶️ ​", Q1(df))
+#print("2️⃣​ ​Q2 ▶️ ​", Q2(df))  #OK
+print("​3️⃣​ ​Q3 ▶️ ​", Q3(df))
+# print("4️⃣​ ​Q4 ▶️ ​", Q4(df))  #OK
+# print("5️⃣ ​Q5 ▶️ ", Q5(df))
