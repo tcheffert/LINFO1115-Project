@@ -251,4 +251,4 @@ print("Q1 ▶", Q1(df))  #OK
 print("Q2 ▶", Q2(df))  #OK
 print("Q3 ▶", Q3(df))  #OK
 print("Q4 ▶", Q4(df))  #OK
-# print("5️⃣ ​Q5 ▶", Q5(df))
+print("Q5 ▶", Q5(df))
