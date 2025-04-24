@@ -4,8 +4,39 @@ import numpy as np
 from template_utils import *
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 
-#---- Task 2 plotting ----#
+#---- Task 1 plotting ----#
+def plot_degree_distribution_hist(degree_hist):
+    """
+    Affiche l'histogramme de la distribution des degrés.
+    Param:
+        degree_hist: liste contenant le nombre de nœuds pour chaque degré (index = degré)
+    """
+    degrees = list(range(len(degree_hist)))
+    counts = degree_hist
 
+    plt.figure(figsize=(10, 5))
+    bars = plt.bar(degrees, counts, color='darkseagreen', edgecolor='black')
+
+    # Ajouter les valeurs au-dessus de chaque barre
+    for bar, count in zip(bars, counts):
+        if count > 0:
+            plt.text(bar.get_x() + bar.get_width() / 2,
+                     bar.get_height() + max(counts)*0.01,
+                     str(count),
+                     ha='center',
+                     fontsize=8,
+                     alpha=0.75)
+
+    plt.xlabel('Node Degree')
+    plt.ylabel('Number of Nodes')
+    plt.title('Histogram of Node Degree Distribution')
+    plt.xticks(degrees)  # Affiche tous les degrés sur l'axe x
+    plt.grid(axis='y', alpha=0.4, linestyle='--')
+    plt.tight_layout()
+    plt.savefig("task1_graph.pdf", format='pdf')
+    # plt.show()
+
+#---- Task 2 plotting ----#
 # Fonction Q2 adaptée pour retour de tous les scores
 def compute_scores(dataframe):
     df = dataframe.copy()
@@ -83,8 +114,8 @@ def plot_shortest_path_distribution(dataframe):
 
     max_len = 10
     path_counts = [0, 24585, 7048529, 30043098, 24882681, 2004049, 226611, 49343, 12887, 391, 44]
-    print(path_counts)
-    print(all(isinstance(x, int) for x in path_counts))  # Doit retourner True
+    # print(path_counts)
+    # print(all(isinstance(x, int) for x in path_counts))  # Doit retourner True
 
     # Préparation des données x et y
     x = list(range(1, max_len + 1))
@@ -92,7 +123,7 @@ def plot_shortest_path_distribution(dataframe):
 
     # Plot principal
     plt.figure(figsize=(10, 5))
-    plt.plot(x, y, marker='o', linestyle='-', color='slateblue', linewidth=2, markersize=6)
+    plt.plot(x, y, marker='o', linestyle='-', color='firebrick', linewidth=2, markersize=6)
 
     # Annotations subtiles
     for i in range(len(x)):
@@ -115,6 +146,9 @@ def plot_shortest_path_distribution(dataframe):
     # plt.show()  # Active si tu veux l'afficher en direct
 
 df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
+#Task 1 plot
+# degree_hist = [0, 7601, 1576, 639, 374, 263, 171, 119, 87, 91, 66, 50, 41, 26, 26, 28, 15, 18, 11, 14, 17]
+# plot_degree_distribution_hist(degree_hist)
 #Task 2 plot
 # plot_avg_incoming_edges_vs_score(df)
 #Task 3 plot
