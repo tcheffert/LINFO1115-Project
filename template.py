@@ -7,25 +7,14 @@ p_value = t.sf
 # import networkx as nx
 
 sys.setrecursionlimit(6000)
+
+
 # A line of the dataset (u, v, w) means that node u has opinion w on node v.
 # Undirected graph
-# Task 1: Basic graph properties
-
-
+#---- Task 1: Basic graph properties ----#
 def Q1(dataframe):
-    u_df = undirect(dataframe).copy()
-
-    # Q1.1: Calcul des degrés
-    degree_count = u_df[0].value_counts()
-    degree_mean = degree_count.mean()
-
-    # Q1.2: Histogramme des degrés (jusqu'à 20)
-    hist = [0] * 21
-    for deg in degree_count.values:
-        if deg < 21:
-            hist[deg] += 1
-
-    # Q1.3
+    # Undirected adjacency list
+    u_df = undirect(dataframe).copy()   
     adj = {}
     for row in u_df.values:
         u, v = row[0], row[1]
@@ -36,9 +25,20 @@ def Q1(dataframe):
         adj[u].add(v)
         adj[v].add(u)
 
+    # Q1.1: Degree mean
+    degree_count = {node: len(neighbors) for node, neighbors in adj.items()}
+    degree_mean = sum(degree_count.values()) / len(degree_count)
+
+    # Q1.2: Histogramme des degrés (jusqu'à 20)
+    hist = [0] * 21
+    for deg in degree_count.values():
+        if deg < 21:
+            hist[deg] += 1
+
+    # Q1.3: Bridges
     bridges = find_bridges(adj)
 
-    # Q1.4
+    # Q1.4: Local Bridges
     local_bridges = 0
     for u in adj:
         for v in adj[u]:
@@ -75,10 +75,10 @@ def Q1(dataframe):
     # print("P-value:", p_v)
 
     return [float(degree_mean), hist, len(bridges), local_bridges, p_v]
+
+
 # Directed graph
-# Task 2: Best score node
-
-
+#---- Task 2: Best score node ----#
 def Q2(dataframe):
     df = dataframe.copy()
     scores = {}  # Dico pour stocker les scores des nodes: {node_i:score_i}
@@ -107,7 +107,7 @@ def Q2(dataframe):
     return [int(best_node), int(max_score)]
 
 # Undirected graph
-# Task 3: Paths lengths analysis
+#---- Task 3: Paths lengths analysis ----#
 def Q3(dataframe):
     u_df = undirect(dataframe).copy()
 
@@ -253,7 +253,7 @@ print("Reading epinion.txt ...")
 df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 print("Reading done.")
 print("Q1 ▶", Q1(df))  #OK
-# print("Q2 ▶", Q2(df))  #OK
-# print("Q3 ▶", Q3(df))  #OK
-# print("Q4 ▶", Q4(df))  #OK
-# print("Q5 ▶", Q5(df))
+print("Q2 ▶", Q2(df))  #OK
+print("Q3 ▶", Q3(df))  #OK
+print("Q4 ▶", Q4(df))  #OK
+print("Q5 ▶", Q5(df))

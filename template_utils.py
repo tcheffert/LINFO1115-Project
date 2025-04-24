@@ -7,6 +7,24 @@ import networkx as nx
 
 def undirect(dataframe):
     """
+    Create an undirected version of the graph with only one edge per node pair.
+    Keeps the first encountered weight (if needed).
+    """
+    seen = set()
+    edges = []
+
+    for row in dataframe.itertuples(index=False):
+        u, v, w = row
+        edge = tuple(sorted([u, v]))  # ensures (u, v) == (v, u)
+        if edge not in seen:
+            seen.add(edge)
+            edges.append([edge[0], edge[1], w])  # keep u < v convention
+
+    undirected_df = pd.DataFrame(edges, columns=[0, 1, 2])
+    return undirected_df.sort_values(by=0).reset_index(drop=True)
+
+def old_undirect(dataframe):
+    """
     Make the graph undirected.
     Return an ordered dataframe with each edge duplicated in both directions (u, v) and (v, u).
     """
