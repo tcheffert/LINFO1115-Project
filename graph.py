@@ -1,6 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from template_utils import *
+from matplotlib.ticker import MaxNLocator, FuncFormatter
+
+#---- Task 2 plotting ----#
 
 # Fonction Q2 adaptée pour retour de tous les scores
 def compute_scores(dataframe):
@@ -51,10 +55,67 @@ def plot_avg_incoming_edges_vs_score(dataframe):
     plt.ylabel("Average Incoming Edges")
     plt.title("Average Incoming Edges vs. Score with f(x) = |x|")
     plt.legend()
-    plt.grid(True, alpha=0.3)
+    plt.grid(True, linestyle='--', alpha=0.4)
     plt.tight_layout()
     plt.savefig("task2_graph.pdf", format='pdf')
     #plt.show()
 
+#---- Task 3 plotting ----#
+def plot_shortest_path_distribution(dataframe):
+    u_df = undirect(dataframe).copy()
+
+    # Construction de la liste d'adjacence
+    adj = {}
+    for row in u_df.values:
+        u, v = row[0], row[1]
+        if u not in adj:
+            adj[u] = set()
+        if v not in adj:
+            adj[v] = set()
+        adj[u].add(v)
+        adj[v].add(u)
+
+    # Récupère les distances des plus courts chemins
+    result = shortest_paths(adj)
+    if not result:
+        print("No paths found.")
+        return
+
+    max_len = 10
+    path_counts = [0, 24585, 7048529, 30043098, 24882681, 2004049, 226611, 49343, 12887, 391, 44]
+    print(path_counts)
+    print(all(isinstance(x, int) for x in path_counts))  # Doit retourner True
+
+    # Préparation des données x et y
+    x = list(range(1, max_len + 1))
+    y = path_counts[1:]
+
+    # Plot principal
+    plt.figure(figsize=(10, 5))
+    plt.plot(x, y, marker='o', linestyle='-', color='slateblue', linewidth=2, markersize=6)
+
+    # Annotations subtiles
+    for i in range(len(x)):
+        plt.text(
+            x[i], y[i] + max(y) * 0.01,  # petite élévation dynamique
+            str(y[i]),
+            fontsize=8,
+            ha='center',
+            color='gray'
+        )
+
+    plt.xticks(range(1, max_len + 1))
+
+    plt.xlabel('Shortest Path Length')
+    plt.ylabel('Number of Pairs')
+    plt.title('Distribution of Shortest Path Lengths')
+    plt.grid(True, linestyle='--', alpha=0.4)
+    plt.tight_layout()
+    plt.savefig("task3_graph.pdf", format='pdf')
+    # plt.show()  # Active si tu veux l'afficher en direct
+
+df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 #Task 2 plot
-plot_avg_incoming_edges_vs_score(pd.read_csv('epinion.txt', header=None, sep="    ", engine="python"))
+# plot_avg_incoming_edges_vs_score(df)
+#Task 3 plot
+plot_shortest_path_distribution(df)

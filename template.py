@@ -134,8 +134,9 @@ def Q3(dataframe):
     for dist in result:
         path_counts[dist - 1] += 1
 
+    diameter = max_len
     # at index 0, the diameter of the largest connected component, at index 1 the total number of shortest paths of length 1 accross all components,
-    return [max_len] + path_counts
+    return [diameter] + path_counts
     # at index the 2 the number of shortest paths of length 2...
 
 
