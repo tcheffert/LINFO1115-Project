@@ -93,18 +93,8 @@ def plot_avg_incoming_edges_vs_score(dataframe):
 
 #---- Task 3 plotting ----#
 def plot_shortest_path_distribution(dataframe):
-    u_df = undirect(dataframe).copy()
-
     # Construction de la liste d'adjacence
-    adj = {}
-    for row in u_df.values:
-        u, v = row[0], row[1]
-        if u not in adj:
-            adj[u] = set()
-        if v not in adj:
-            adj[v] = set()
-        adj[u].add(v)
-        adj[v].add(u)
+    adj = build_adjacency_list(dataframe)
 
     # Récupère les distances des plus courts chemins
     result = shortest_paths(adj)
