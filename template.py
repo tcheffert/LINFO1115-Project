@@ -16,7 +16,13 @@ def Q1(dataframe):
     adj = build_adjacency_list(dataframe)
 
     # Q1.1: Degree mean
-    degree_count = {node: len(neighbors) for node, neighbors in adj.items()}
+    degree_count = {}
+    for node, neighbors in adj.items():
+        degree = len(neighbors)
+        if node in neighbors:
+            degree += 1  # Self-loop counts twice
+        degree_count[node] = degree
+
     degree_mean = sum(degree_count.values()) / len(degree_count)
 
     # Q1.2: Histogramme des degrés (jusqu'à 20)
@@ -44,20 +50,24 @@ def Q1(dataframe):
         for v in adj[u]:
             if u < v and (u, v) not in bridges and (v, u) not in bridges:
                 if is_local_bridge(adj, u, v):
-                    degrees.append(len(adj[u]))
-                    degrees.append(len(adj[v]))
+                    deg_u = len(adj[u])
+                    deg_v = len(adj[v])
+                    if u in adj[u]:
+                        deg_u += 1
+                    if v in adj[v]:
+                        deg_v += 1
+                    degrees.append(deg_u)
+                    degrees.append(deg_v)
 
     if degrees:
         mean_lb = sum(degrees) / len(degrees)
-        std_lb = (sum((x - mean_lb) ** 2 for x in degrees) /
-                  len(degrees)) ** 0.5
+        std_lb = (sum((x - mean_lb) ** 2 for x in degrees) / len(degrees)) ** 0.5
         n = len(degrees)
-        t_stat = (mean_lb - degree_mean) / \
-            (std_lb / n**0.5) if std_lb != 0 else 0
+        t_stat = (mean_lb - degree_mean) / (std_lb / n**0.5) if std_lb != 0 else 0
         p_v = 2 * t.sf(abs(t_stat), n-1)
-
     else:
         p_v = 1.0
+
 
     # print(f"# nœuds LB non-global: {len(degrees)}")
     # print(f"mean LB: {mean_lb:.3f} vs global mean: {degree_mean:.3f}")
@@ -180,6 +190,7 @@ def Q5(dataframe):
     adj = build_adjacency_list(dataframe)
     edge_sign = {}
     for row in dataframe.values:
+        u, v, w = row
         edge_sign[frozenset([u, v])] = w
 
     # Find triangles
@@ -217,12 +228,12 @@ def Q5(dataframe):
 
 # you can write additionnal functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
 
-
+# ---- Running ---- #
 print("Reading epinion.txt ...")
 df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 print("Reading done.")
-# print("Q1 ▶", Q1(df))  #OK
+print("Q1 ▶", Q1(df))  #OK
 # print("Q2 ▶", Q2(df))  #OK
-print("Q3 ▶", Q3(df))  #OK
+# print("Q3 ▶", Q3(df))  #OK
 # print("Q4 ▶", Q4(df))  #OK
 # print("Q5 ▶", Q5(df))

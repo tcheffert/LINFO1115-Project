@@ -147,9 +147,9 @@ def plot_shortest_path_distribution(dataframe):
 
 df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 #Task 1 plot
-# degree_hist = [0, 7601, 1576, 639, 374, 263, 171, 119, 87, 91, 66, 50, 41, 26, 26, 28, 15, 18, 11, 14, 17]
+# degree_hist = [0, 7601, 1576, 638, 375, 263, 171, 119, 87, 91, 66, 50, 41, 26, 26, 28, 15, 18, 11, 14, 17]
 # plot_degree_distribution_hist(degree_hist)
 #Task 2 plot
 # plot_avg_incoming_edges_vs_score(df)
 #Task 3 plot
-plot_shortest_path_distribution(df)
+# plot_shortest_path_distribution(df)
