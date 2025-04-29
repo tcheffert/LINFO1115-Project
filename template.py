@@ -4,26 +4,16 @@ import sys
 from template_utils import *
 from scipy.stats import t
 p_value = t.sf
-# import networkx as nx
 
 sys.setrecursionlimit(6000)
 
-
 # A line of the dataset (u, v, w) means that node u has opinion w on node v.
 # Undirected graph
+
 #---- Task 1: Basic graph properties ----#
 def Q1(dataframe):
-    # Undirected adjacency list
-    u_df = undirect(dataframe).copy()   
-    adj = {}
-    for row in u_df.values:
-        u, v = row[0], row[1]
-        if u not in adj:
-            adj[u] = set()
-        if v not in adj:
-            adj[v] = set()
-        adj[u].add(v)
-        adj[v].add(u)
+    # Undirected adjacency list  
+    adj = build_adjacency_list(dataframe)
 
     # Q1.1: Degree mean
     degree_count = {node: len(neighbors) for node, neighbors in adj.items()}
@@ -109,18 +99,7 @@ def Q2(dataframe):
 # Undirected graph
 #---- Task 3: Paths lengths analysis ----#
 def Q3(dataframe):
-    u_df = undirect(dataframe).copy()
-
-    # Build the undirected graph using adjacency list
-    adj = {}
-    for row in u_df.values:
-        u, v = row[0], row[1]
-        if u not in adj:
-            adj[u] = set()
-        if v not in adj:
-            adj[v] = set()
-        adj[u].add(v)
-        adj[v].add(u)
+    adj = build_adjacency_list(dataframe)
 
     # Compute all shortest paths
     result = shortest_paths(adj)
@@ -197,21 +176,10 @@ def Q4(dataframe):
 
 
 def Q5(dataframe):
-    # Convert to undirected graph (with signed edges)
-    u_df = undirect(dataframe).copy()
-
     # Build adjacency list and edge sign dictionary
-    adj = {}
+    adj = build_adjacency_list(dataframe)
     edge_sign = {}
-
-    for row in u_df.values:
-        u, v, w = row
-        if u not in adj:
-            adj[u] = set()
-        if v not in adj:
-            adj[v] = set()
-        adj[u].add(v)
-        adj[v].add(u)
+    for row in dataframe.values:
         edge_sign[frozenset([u, v])] = w
 
     # Find triangles
@@ -253,8 +221,8 @@ def Q5(dataframe):
 print("Reading epinion.txt ...")
 df = pd.read_csv('epinion.txt', header=None, sep="    ", engine="python")
 print("Reading done.")
-print("Q1 ▶", Q1(df))  #OK
-print("Q2 ▶", Q2(df))  #OK
+# print("Q1 ▶", Q1(df))  #OK
+# print("Q2 ▶", Q2(df))  #OK
 print("Q3 ▶", Q3(df))  #OK
-print("Q4 ▶", Q4(df))  #OK
-print("Q5 ▶", Q5(df))
+# print("Q4 ▶", Q4(df))  #OK
+# print("Q5 ▶", Q5(df))

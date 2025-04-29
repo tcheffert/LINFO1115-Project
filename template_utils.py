@@ -5,34 +5,24 @@ import networkx as nx
 
 # Then write the classes and/or functions you wish to use in the exercises
 
-def undirect(dataframe):
+def build_adjacency_list(dataframe):
     """
-    Create an undirected version of the graph with only one edge per node pair.
-    Keeps the first encountered weight (if needed).
+    Build an adjacency list from a dataframe.
+    The dataframe contains three columns: source, target, and weight.
     """
-    seen = set()
-    edges = []
+    # Build the graph using adjacency list
+    adj = {}
+    for row in dataframe.values:
+        u, v = row[0], row[1]
+        if u not in adj:
+            adj[u] = set()
+        if v not in adj:
+            adj[v] = set()
+        adj[u].add(v)
+        adj[v].add(u)
 
-    for row in dataframe.itertuples(index=False):
-        u, v, w = row
-        edge = tuple(sorted([u, v]))  # ensures (u, v) == (v, u)
-        if edge not in seen:
-            seen.add(edge)
-            edges.append([edge[0], edge[1], w])  # keep u < v convention
+    return adj
 
-    undirected_df = pd.DataFrame(edges, columns=[0, 1, 2])
-    return undirected_df.sort_values(by=0).reset_index(drop=True)
-
-def old_undirect(dataframe):
-    """
-    Make the graph undirected.
-    Return an ordered dataframe with each edge duplicated in both directions (u, v) and (v, u).
-    """
-    df = dataframe.copy()
-    reversed_edges = dataframe[[1, 0, 2]].copy()  
-    reversed_edges.columns = [0, 1, 2]
-    result_df = pd.concat([df, reversed_edges], ignore_index=True)
-    return result_df.sort_values(by=0).reset_index(drop=True)
 
 def find_bridges(graph):
     """
@@ -90,48 +80,6 @@ def is_local_bridge(graph, u, v):
     graph[v].add(u)
 
     return not found or dist > 2
-
-def bfs(start, adj, visited: set):
-        queue = [start]
-        component = set()
-        while queue:
-            node = queue.pop(0)
-            if node not in visited:
-                visited.add(node)
-                component.add(node)
-                for neighbor in adj[node]:
-                    if neighbor not in visited:
-                        queue.append(neighbor)
-        return component
-
-def largest_connected_component(adj):
-    visited = set()
-    largest_component = set()
-
-    for node in adj:
-        if node not in visited:
-            component = bfs(node, adj, visited)
-            if len(component) > len(largest_component):
-                largest_component = component
-
-    return largest_component
-
-def diameter(adj, component):
-    max_distance = 0
-
-    for start in component:
-        distances = {start: 0}
-        queue = [start]
-        while queue:
-            current = queue.pop(0)
-            for neighbor in adj[current]:
-                if neighbor in component and neighbor not in distances:
-                    distances[neighbor] = distances[current] + 1
-                    queue.append(neighbor)
-        max_distance = max(max_distance, max(distances.values()))
-
-    return max_distance
-
 
 def shortest_paths(adj):
     """
