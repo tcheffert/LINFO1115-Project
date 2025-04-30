@@ -12,12 +12,16 @@ def build_adjacency_list(dataframe):
     """
     # Build the graph using adjacency list
     adj = {}
+
+    # Iterate through the dataframe rows
     for row in dataframe.values:
         u, v = row[0], row[1]
         if u not in adj:
             adj[u] = set()
         if v not in adj:
             adj[v] = set()
+            
+        # Add edges to the adjacency list
         adj[u].add(v)
         adj[v].add(u)
 
@@ -44,10 +48,33 @@ def build_adjacency_list_without_self_loops(dataframe):
     
 
 
+def dfs(u, graph, visited, disc, low, parent, bridges, time):
+    """
+    Perform DFS to find bridges in the graph.
+    """
+    # Initialize variables
+    visited[u] = True
+    disc[u] = low[u] = time[0]
+    time[0] += 1
+
+    # Visit all adjacent vertices
+    for v in graph[u]:
+        # If v is not visited, recurse on it
+        if v not in visited:
+            parent[v] = u
+            dfs(v, graph, visited, disc, low, parent, bridges, time) # DFS recursion
+            low[u] = min(low[u], low[v])
+            if low[v] > disc[u]:
+                bridges.append((u, v))
+        # If v is already visited and is not the parent of u, update low value of u
+        elif v != parent.get(u):
+            low[u] = min(low[u], disc[v])
+
 def find_bridges(graph):
     """
     Find all bridges in an undirected graph using DFS.
     """
+    # Initialize variables
     time = [0]
     visited = {}
     low = {}
@@ -55,24 +82,9 @@ def find_bridges(graph):
     parent = {}
     bridges = []
 
-    def dfs(u):
-        visited[u] = True
-        disc[u] = low[u] = time[0]
-        time[0] += 1
-
-        for v in graph[u]:
-            if v not in visited:
-                parent[v] = u
-                dfs(v)
-                low[u] = min(low[u], low[v])
-                if low[v] > disc[u]:
-                    bridges.append((u, v))
-            elif v != parent.get(u):
-                low[u] = min(low[u], disc[v])
-
     for node in graph:
         if node not in visited:
-            dfs(node)
+            dfs(node, graph, visited, disc, low, parent, bridges, time) # DFS
 
     return bridges
 
