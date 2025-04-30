@@ -12,68 +12,58 @@ sys.setrecursionlimit(6000)
 
 #---- Task 1: Basic graph properties ----#
 def Q1(dataframe):
-    # Undirected adjacency list  
+    # Build adjacency list from the dataframe
     adj = build_adjacency_list(dataframe)
 
-    # Q1.1: Degree mean
+    # 1.1. Degré moyen
     degree_count = {}
     for node, neighbors in adj.items():
         degree = len(neighbors)
-        if node in neighbors:
-            degree += 1  # Self-loop counts twice
+        if node in neighbors:  # self-loop
+            degree += 1
         degree_count[node] = degree
 
     degree_mean = sum(degree_count.values()) / len(degree_count)
 
-    # Q1.2: Histogramme des degrés (jusqu'à 20)
+    # 1.2. Histogramme des degrés (jusqu’à 20)
     hist = [0] * 21
     for deg in degree_count.values():
         if deg < 21:
             hist[deg] += 1
 
-    # Q1.3: Bridges
-    bridges = find_bridges(adj)
+    # 1.3. Ponts
+    bridges = set(find_bridges(adj))
 
-    # Q1.4: Local Bridges
+    # 1.4. Local bridges
     local_bridges = 0
-    for u in adj:
-        for v in adj[u]:
-            if u < v:
-                if is_local_bridge(adj, u, v):
-                    local_bridges += 1
-
-    #print(local_bridges)
-
-    # Q1.5
     degrees = []
+    seen = set()
     for u in adj:
         for v in adj[u]:
-            if u < v and (u, v) not in bridges and (v, u) not in bridges:
+            # Check if u and v are not the same node
+            if u < v and (u, v) not in seen:
+                seen.add((u, v))
+                is_bridge = (u, v) in bridges or (v, u) in bridges
+                # Check if u and v are local bridges
                 if is_local_bridge(adj, u, v):
-                    deg_u = len(adj[u])
-                    deg_v = len(adj[v])
-                    if u in adj[u]:
-                        deg_u += 1
-                    if v in adj[v]:
-                        deg_v += 1
-                    degrees.append(deg_u)
-                    degrees.append(deg_v)
+                    local_bridges += 1 
+                    # Check if u and v are not in the same component
+                    if not is_bridge:
+                        degrees.append(degree_count[u])
+                        degrees.append(degree_count[v])
 
+    # 1.5. p-valeur et T-test
     if degrees:
         mean_lb = sum(degrees) / len(degrees)
         std_lb = (sum((x - mean_lb) ** 2 for x in degrees) / len(degrees)) ** 0.5
         n = len(degrees)
         t_stat = (mean_lb - degree_mean) / (std_lb / n**0.5) if std_lb != 0 else 0
-        p_v = 2 * t.sf(abs(t_stat), n-1)
+        p_v = 2 * t.sf(abs(t_stat), n - 1)
     else:
         p_v = 1.0
 
-    # print(f"# nœuds LB non-global: {len(degrees)}")
-    # print(f"mean LB: {mean_lb:.3f} vs global mean: {degree_mean:.3f}")
-    # print("T-stat:", t_stat)
-    # print("P-value:", p_v)
-
     return [float(degree_mean), hist, len(bridges), local_bridges, p_v]
+
 
 
 # Directed graph

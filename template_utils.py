@@ -1,7 +1,6 @@
 # First, import the libraries needed for your helper functions
 import numpy as np
 import pandas as pd
-import networkx as nx
 
 # Then write the classes and/or functions you wish to use in the exercises
 
@@ -20,7 +19,7 @@ def build_adjacency_list(dataframe):
             adj[u] = set()
         if v not in adj:
             adj[v] = set()
-            
+
         # Add edges to the adjacency list
         adj[u].add(v)
         adj[v].add(u)
@@ -88,30 +87,32 @@ def find_bridges(graph):
 
     return bridges
 
-def is_local_bridge(graph, u, v):
-    """
-    Determine if edge (u, v) is a local bridge.
-    """
-    graph[u].remove(v)
-    graph[v].remove(u)
+def is_local_bridge(adj, u, v):
+    # Pas un local bridge s'ils partagent un voisin (triangle)
+    if adj[u].intersection(adj[v]):
+        return False
 
+    # BFS limité à profondeur 2
     visited = {u}
     queue = [(u, 0)]
-    found = False
+
     while queue:
-        current, dist = queue.pop(0)
-        if current == v:
-            found = True
-            break
-        for neighbor in graph.get(current, []):
+        node, dist = queue.pop(0)
+        # On ne cherche pas plus loin que la profondeur 2
+        if dist >= 2:
+            continue
+        # On explore les voisins
+        for neighbor in adj[node]:
+            if (node == u and neighbor == v) or (node == v and neighbor == u):
+                continue  # on simule que (u,v) n'existe pas
+            if neighbor == v:
+                return False  # il existe un autre chemin court
+            # Si le voisin n'est pas encore visité, on l'ajoute à la queue
             if neighbor not in visited:
                 visited.add(neighbor)
                 queue.append((neighbor, dist + 1))
 
-    graph[u].add(v)
-    graph[v].add(u)
-
-    return not found or dist > 2
+    return True
 
 def shortest_paths(adj):
     """
