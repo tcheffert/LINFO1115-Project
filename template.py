@@ -68,7 +68,6 @@ def Q1(dataframe):
     else:
         p_v = 1.0
 
-
     # print(f"# nœuds LB non-global: {len(degrees)}")
     # print(f"mean LB: {mean_lb:.3f} vs global mean: {degree_mean:.3f}")
     # print("T-stat:", t_stat)
@@ -121,7 +120,7 @@ def Q3(dataframe):
     path_counts = [0] * max_len
 
     for dist in result:
-        path_counts[dist - 1] += 1
+        path_counts[dist - 1] += 1 
 
     diameter = max_len
     # at index 0, the diameter of the largest connected component, at index 1 the total number of shortest paths of length 1 accross all components,
@@ -134,17 +133,22 @@ def Q3(dataframe):
 def Q4(dataframe):
     # Build adjacency lists from the dataframe
     df = dataframe.copy()
-    edges = df[[0, 1]].values
+    edges = df[[0, 1]].values # Extraction des arêtes (paires source-destination) du dataframe
+
+    # Dictionnaires pour stocker les listes d'adjacence sortantes et entrantes
     outgoing = {}
     incoming = {}
 
-    nodes = set()
+    nodes = set() # Set pour stocker les noeuds uniques
+
+    # Parcours des arêtes pour construire les listes d'adjacence
     for src, dst in edges:
         nodes.update([src, dst])
         outgoing.setdefault(src, set()).add(dst)
         incoming.setdefault(dst, set()).add(src)
         outgoing.setdefault(dst, set())
         incoming.setdefault(src, set())
+
 
     nodes = list(nodes)
     N = len(nodes)
@@ -153,10 +157,12 @@ def Q4(dataframe):
     convergence_threshold = N * 1e-6
     delta = 1
 
+    # PageRank algorithm
     while delta > convergence_threshold:
         new_pr = {}
         delta = 0
 
+        # Calculate new PageRank scores
         for node in nodes:
             sum_contrib = 0.0
             for src in incoming[node]:
@@ -170,10 +176,12 @@ def Q4(dataframe):
 
         pr = new_pr
 
+    # Normalize PageRank scores
     total_pr = sum(pr.values())
     for node in pr:
         pr[node] /= total_pr
 
+    # Find the node with the highest PageRank score
     max_node = max(pr, key=pr.get)
     max_score = pr[max_node]
 
@@ -187,7 +195,7 @@ def Q4(dataframe):
 
 def Q5(dataframe):
     # Build adjacency list and edge sign dictionary
-    adj = build_adjacency_list(dataframe)
+    adj = build_adjacency_list_without_self_loops(dataframe)  #On retire les self-loops de la liste d'adjacence pour les triangles
     edge_sign = {}
     for row in dataframe.values:
         u, v, w = row
@@ -197,6 +205,7 @@ def Q5(dataframe):
     triangles = set()
     for u in adj:
         neighbors = list(adj[u])
+        # Check all pairs of neighbors
         for i in range(len(neighbors)):
             for j in range(i + 1, len(neighbors)):
                 v = neighbors[i]
@@ -208,6 +217,7 @@ def Q5(dataframe):
     # Classify triangles
     balanced = 0
     unbalanced = 0
+    # Check the sign of each triangle
     for t in triangles:
         u, v, w = t
         s1 = edge_sign[frozenset([u, v])]
@@ -218,6 +228,7 @@ def Q5(dataframe):
         else:
             unbalanced += 1
 
+    # Calculate GCC
     num_closed_triplets = 3 * len(triangles)
     total_triplets = count_triplets(adj)
     num_open_triplets = total_triplets - num_closed_triplets
@@ -236,4 +247,4 @@ print("Q1 ▶", Q1(df))  #OK
 print("Q2 ▶", Q2(df))  #OK
 print("Q3 ▶", Q3(df))  #OK
 print("Q4 ▶", Q4(df))  #OK
-print("Q5 ▶", Q5(df))
+print("Q5 ▶", Q5(df))  #OK

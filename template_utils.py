@@ -23,6 +23,26 @@ def build_adjacency_list(dataframe):
 
     return adj
 
+# Pour la Q5
+def build_adjacency_list_without_self_loops(dataframe):
+    # Build the graph using adjacency list without self-loops
+    adj = {}
+    for row in dataframe.values:
+        u, v = row[0], row[1]
+        # Check for self-loops
+        if u == v:
+            continue
+        # Add edges to the adjacency list
+        if u not in adj:
+            adj[u] = set()
+        if v not in adj:
+            adj[v] = set()
+        adj[u].add(v)
+        adj[v].add(u)
+
+    return adj
+    
+
 
 def find_bridges(graph):
     """
