@@ -28,6 +28,10 @@ def build_adjacency_list(dataframe):
 
 # Pour la Q5
 def build_adjacency_list_without_self_loops(dataframe):
+    """
+    Build an adjacency list from a dataframe without self-loops.
+    The dataframe contains three columns: source, target, and weight.
+    """
     # Build the graph using adjacency list without self-loops
     adj = {}
     for row in dataframe.values:
@@ -86,33 +90,6 @@ def find_bridges(graph):
             dfs(node, graph, visited, disc, low, parent, bridges, time) # DFS
 
     return bridges
-
-def is_local_bridge(adj, u, v):
-    # Pas un local bridge s'ils partagent un voisin (triangle)
-    if adj[u].intersection(adj[v]):
-        return False
-
-    # BFS limité à profondeur 2
-    visited = {u}
-    queue = [(u, 0)]
-
-    while queue:
-        node, dist = queue.pop(0)
-        # On ne cherche pas plus loin que la profondeur 2
-        if dist >= 2:
-            continue
-        # On explore les voisins
-        for neighbor in adj[node]:
-            if (node == u and neighbor == v) or (node == v and neighbor == u):
-                continue  # on simule que (u,v) n'existe pas
-            if neighbor == v:
-                return False  # il existe un autre chemin court
-            # Si le voisin n'est pas encore visité, on l'ajoute à la queue
-            if neighbor not in visited:
-                visited.add(neighbor)
-                queue.append((neighbor, dist + 1))
-
-    return True
 
 def shortest_paths(adj):
     """

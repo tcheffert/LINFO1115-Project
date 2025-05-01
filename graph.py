@@ -103,7 +103,7 @@ def plot_shortest_path_distribution(dataframe):
         return
 
     max_len = 10
-    path_counts = [0, 24585, 7048529, 30043098, 24882681, 2004049, 226611, 49343, 12887, 391, 44]
+    path_counts = [0, 49170, 14097058, 60086196, 49765362, 4008098, 453222, 98686, 25774, 782, 88]
     # print(path_counts)
     # print(all(isinstance(x, int) for x in path_counts))  # Doit retourner True
 

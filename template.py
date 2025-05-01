@@ -12,50 +12,51 @@ sys.setrecursionlimit(6000)
 
 #---- Task 1: Basic graph properties ----#
 def Q1(dataframe):
-    # Build adjacency list from the dataframe
+    # Undirected adjacency list WITH self-loops
     adj = build_adjacency_list(dataframe)
 
-    # 1.1. Degré moyen
+    # Q1.1: Degree mean
     degree_count = {}
     for node, neighbors in adj.items():
         degree = len(neighbors)
-        if node in neighbors:  # self-loop
-            degree += 1
+        if node in neighbors:
+            degree += 1  # Self-loop counts twice
         degree_count[node] = degree
 
     degree_mean = sum(degree_count.values()) / len(degree_count)
 
-    # 1.2. Histogramme des degrés (jusqu’à 20)
+    # Q1.2: Histogram of degrees (up to 20)
     hist = [0] * 21
     for deg in degree_count.values():
         if deg < 21:
             hist[deg] += 1
 
-    # 1.3. Ponts
-    bridges = set(find_bridges(adj))
+    # Q1.3: Bridges
+    bridges = find_bridges(adj)
+    bridges_set = set((min(u, v), max(u, v)) for u, v in bridges) # Store bridges as sorted tuples
 
-    # 1.4. Local bridges
+    # Q1.4 & Q1.5: Local Bridges and degree stats combined
     local_bridges = 0
     degrees = []
-    seen = set()
+
     for u in adj:
         for v in adj[u]:
-            # Check if u and v are not the same node
-            if u < v and (u, v) not in seen:
-                seen.add((u, v))
-                is_bridge = (u, v) in bridges or (v, u) in bridges
-                # Check if u and v are local bridges
-                if is_local_bridge(adj, u, v):
-                    local_bridges += 1 
-                    # Check if u and v are not in the same component
-                    if not is_bridge:
-                        degrees.append(degree_count[u])
-                        degrees.append(degree_count[v])
+            if u < v:
+                # Vérifier s'il existe un voisin commun ≠ u et ≠ v
+                # (u, v) est un local bridge uniquement s’il n’a aucun voisin commun autre que u ou v
+                common_neighbors = adj[u].intersection(adj[v]) - {u, v} 
+                if not common_neighbors:
+                    local_bridges += 1
+                    # Seulement si ce n'est pas un pont global
+                    if (u, v) not in bridges_set and (v, u) not in bridges_set:
+                        deg_u = len(adj[u]) + (1 if u in adj[u] else 0)
+                        deg_v = len(adj[v]) + (1 if v in adj[v] else 0)
+                        degrees.extend([deg_u, deg_v])
 
-    # 1.5. p-valeur et T-test
+    # Q1.5: Statistical test
     if degrees:
         mean_lb = sum(degrees) / len(degrees)
-        std_lb = (sum((x - mean_lb) ** 2 for x in degrees) / len(degrees)) ** 0.5
+        std_lb = (sum((x - mean_lb) ** 2 for x in degrees) / len(degrees)) ** 0.5   # Standard deviation for local bridges
         n = len(degrees)
         t_stat = (mean_lb - degree_mean) / (std_lb / n**0.5) if std_lb != 0 else 0
         p_v = 2 * t.sf(abs(t_stat), n - 1)
@@ -110,7 +111,7 @@ def Q3(dataframe):
     path_counts = [0] * max_len
 
     for dist in result:
-        path_counts[dist - 1] += 1 
+        path_counts[dist - 1] += 2  # Each path is counted twice (u, v) and (v, u) -> https://moodle.uclouvain.be/mod/forum/discuss.php?d=174502
 
     diameter = max_len
     # at index 0, the diameter of the largest connected component, at index 1 the total number of shortest paths of length 1 accross all components,
@@ -185,7 +186,7 @@ def Q4(dataframe):
 
 def Q5(dataframe):
     # Build adjacency list and edge sign dictionary
-    adj = build_adjacency_list_without_self_loops(dataframe)  #On retire les self-loops de la liste d'adjacence pour les triangles
+    adj = build_adjacency_list_without_self_loops(dataframe)  #On retire les self-loops de la liste d'adjacence pour les triangles ! (definition)
     edge_sign = {}
     for row in dataframe.values:
         u, v, w = row
