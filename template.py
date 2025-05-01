@@ -99,6 +99,7 @@ def Q2(dataframe):
 # Undirected graph
 #---- Task 3: Paths lengths analysis ----#
 def Q3(dataframe):
+    # Undirected adjacency list WITH self-loops
     adj = build_adjacency_list(dataframe)
 
     # Compute all shortest paths
